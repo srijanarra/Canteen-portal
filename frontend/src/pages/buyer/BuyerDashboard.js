@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BuyerProfile from './BuyerProfile';
 import BuyerOrders from './BuyerOrders';
+import BuyerFoodPage from './BuyerFoodPage';
 
 function BuyerDashboard() {
   const buyerId = localStorage.getItem("buyerId");
@@ -19,6 +20,7 @@ function BuyerDashboard() {
         <h3>Buyer Dashboard</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           <li><button onClick={() => setActiveTab('profile')}>Profile</button></li>
+          <li><button onClick={() => setActiveTab('food')}>Food Dashboard</button></li>
           <li><button onClick={() => setActiveTab('orders')}>Orders</button></li>
           <li><button onClick={() => setActiveTab('wallet')}>Wallet</button></li>
         </ul>
@@ -28,6 +30,7 @@ function BuyerDashboard() {
       <div style={{ flex: 1, padding: "20px" }}>
         {activeTab === "profile" && <BuyerProfile buyerId={buyerId} />}
         {activeTab === "orders" && <BuyerOrders buyerId={buyerId} />}
+        {activeTab === "food" && <BuyerFoodPage />}
       </div>
 
     </div>

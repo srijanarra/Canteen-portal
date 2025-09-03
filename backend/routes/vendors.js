@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Vendor = require("../models/Vendor");
 
-
 // Get vendor profile
 router.get('/:id', async (req, res) => {
   try {

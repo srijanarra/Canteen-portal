@@ -106,6 +106,7 @@ function VendorMenu() {
    try {
      const res = await axios.post("http://localhost:3001/item", {
        ...newItem,
+       vendorId,
        rating: 0, // default rating
      });
      setItems([...items, res.data]);

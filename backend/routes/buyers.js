@@ -9,26 +9,21 @@ router.get("/:id", async (req, res) => {
     if (!buyer) return res.status(404).json({ error: "Buyer not found" });
     res.json(buyer);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching buyer profile' });
   }
 });
 
 // Update buyer profile
 router.put("/:id", async (req, res) => {
   try {
-    const updated = await Buyer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true } // return updated document
-    );
-    res.json(updated);
+    const updated = await Buyer.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ message: 'Profile updated successfully', buyer: updated });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Error updating buyer profile' });
   }
 });
-
-module.exports = router;
-
 
 // Add new buyer
 router.post("/register", async (req, res) => {

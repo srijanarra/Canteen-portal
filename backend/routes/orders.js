@@ -1,8 +1,59 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Item = require('../models/Item');
 
-// 1. Create a new order (placed by buyer)
+// Buyer - Create a new order (placed by buyer)
+router.post("/", async (req, res) => {
+  try {
+    const { buyerId, itemId, quantity, addons } = req.body;
+
+    // Get item details to fetch price & vendor
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    // Calculate total price
+    let totalPrice = item.price * quantity;
+    if (addons && addons.length > 0) {
+      addons.forEach((addon) => {
+        totalPrice += addon.price;
+      });
+    }
+
+    // Create new order
+    const newOrder = new Order({
+      buyerId,
+      vendorId: item.vendorId, // ✅ taken from item model
+      itemId,
+      quantity,
+      addons,
+      totalPrice,
+    });
+
+    const savedOrder = await newOrder.save();
+    res.json({ message: "Order placed successfully", order: savedOrder });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error placing order" });
+  }
+});
+
+// Buyer - Get all orders for a buyer (needed for BuyerDashboard)
+router.get("/buyer/:buyerId", async (req, res) => {
+  try {
+    const orders = await Order.find({ buyerId: req.params.buyerId })
+      .populate("itemId")
+      .populate("vendorId");
+    res.json(orders);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+
+// Vendor - Create a new order (placed by buyer)
 router.post('/', async (req, res) => {
   try {
     const { buyerId, vendorId, itemId, quantity, addons, totalPrice } = req.body;
@@ -23,7 +74,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. Get all orders for a vendor
+// Vendor - Get all orders for a vendor
 router.get('/vendor/:vendorId', async (req, res) => {
   try {
     const orders = await Order.find({ vendorId: req.params.vendorId })
@@ -35,7 +86,7 @@ router.get('/vendor/:vendorId', async (req, res) => {
   }
 });
 
-// 3. Update order status with max-10 rule
+// Vendor - Update order status with max-10 rule
 router.put('/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -70,7 +121,7 @@ router.put('/:id/status', async (req, res) => {
   }
 });
 
-// Get vendor stats
+// Vendor - Get vendor stats
 router.get("/vendor/:vendorId/stats", async (req, res) => {
   try {
     const vendorId = req.params.vendorId;

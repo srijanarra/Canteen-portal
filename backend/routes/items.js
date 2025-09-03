@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
 
+// ✅ Get all items (for buyer food page)
+router.get('/', async (req, res) => {
+  try {
+    const items = await Item.find().populate("vendorId", "shop_name opening_time closing_time");
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching items" });
+  }
+});
+
+
 // ✅ Get all items for a vendor
 router.get('/:vendorId', async (req, res) => {
   try {
@@ -19,7 +30,8 @@ router.post('/', async (req, res) => {
     await newItem.save();
     res.json(newItem);
   } catch (err) {
-    res.status(500).json({ error: 'Error adding item' });
+    console.error("Error adding item:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 

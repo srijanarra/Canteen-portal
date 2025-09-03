@@ -12,8 +12,7 @@ function BuyerProfile() {
       try {
         const res = await axios.get(`http://localhost:3001/buyer/${buyerId}`);
         setBuyer(res.data);
-        console.log(res);
-        console.log(res.data);
+        // console.log("Fetched buyer:", res.data);
       } catch (err) {
         console.error(err);
       }

@@ -16,10 +16,11 @@ function LoginPage() {
     try {
       const res = await axios.post('http://localhost:3001/buyer_auth/login', loginData);
       alert(res.data.message);
+      localStorage.setItem('buyerId', res.data.buyerId);
       navigate('/buyer');
     } catch (err) {
       console.error(err);
-      alert('Invalid login');
+      alert('Invalid buyer login');
     }
   };
 
